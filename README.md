@@ -1,50 +1,77 @@
+Here's the updated README section for Docker usage:
+
 # Effect-TS Node.js Backend
 
 A Node.js backend application built with Effect-TS.
 
 ## Prerequisites
 
-- Node.js >= 18.0.0
-- npm or pnpm
+- Node.js >= 22.0.0
+- pnpm
+- Docker
 
-## Quick Start
+## Local Development
 
-Clone and install dependencies:
+Install dependencies:
 ```bash
-git clone <repository-url>
-cd nodejs-app
-npm install
+pnpm install
 ```
 
-## Development
-
-Run the development server with hot reload:
+Run development server:
 ```bash
-npm run dev
+pnpm dev
 ```
 
-## Build and Run
+## Docker
 
-Build the application:
+### Build Image
+
 ```bash
-npm run build
+docker build \
+  --platform linux/amd64 \
+  --tag effect-ts-backend:1.0.0 \
+  --tag effect-ts-backend:latest \
+  --build-arg NODE_ENV=production \
+  .
 ```
 
-Start the production server:
+### Run Container
+
+Development:
 ```bash
-npm start
+docker run \
+  --name effect-backend \
+  -p 8000:8000 \
+  -e NODE_ENV=development \
+  effect-ts-backend:latest
 ```
 
-## Additional Commands
-
-Type checking:
+Production:
 ```bash
-npm run typecheck
+docker run \
+  --name effect-backend \
+  -p 8000:8000 \
+  -e NODE_ENV=production \
+  --restart unless-stopped \
+  -d \
+  effect-ts-backend:latest
 ```
 
-Clean build artifacts:
+### Docker Commands
+
+Check container logs:
 ```bash
-npm run clean
+docker logs effect-backend
+```
+
+Stop container:
+```bash
+docker stop effect-backend
+```
+
+Remove container:
+```bash
+docker rm effect-backend
 ```
 
 ## Project Structure
@@ -55,8 +82,17 @@ nodejs-app/
 │   ├── main.ts      # Application entry point
 │   └── server/      # Server configuration
 ├── dist/            # Compiled output
+├── Dockerfile       # Docker configuration
+├── .dockerignore    # Docker ignore file
 ├── vite.config.js   # Vite configuration
 └── tsconfig.json    # TypeScript configuration
 ```
 
 The application runs on port 8000 by default.
+
+## Health Check
+
+The Docker container includes a health check endpoint at:
+```
+http://localhost:8000/health
+```
